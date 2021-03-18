@@ -3,28 +3,13 @@ import codecs
 from html.parser import HTMLParser # for HTML Cleaner
 import pandas as pd # for output report
 
-from html.parser import HTMLParser
-
 class HTMLCleaner(HTMLParser):
     def __init__(self, *args, **kwargs):
         super(HTMLCleaner, self).__init__(*args, **kwargs)
-        self.tag_stack = []
         self.data_list = []
-        self.hasdata = False
-
-    def handle_starttag(self, tag, attrs):
-        self.tag_stack.append(tag)
-        self.hasdata = False
-
-    def handle_endtag(self, tag):
-        pop_tag = self.tag_stack.pop()
-        if pop_tag == tag and self.hasdata == False:
-            self.data_list.append('')
 
     def handle_data(self, data):
-        self.hasdata = True
         self.data_list.append(data)
-
 
 class INFO_GPO(object):
     def __init__(self):
