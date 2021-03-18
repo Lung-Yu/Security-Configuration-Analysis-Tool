@@ -73,7 +73,7 @@ class GPResult_Parser(object):
         return self._tables[index]
 
     def _get_text_from_html(self,str_html):
-        new_str = str(str_html).replace('\n','')
+        new_str = str(str_html).replace('\n','').replace('<td></td>','<td> </td>')
         cleaner = HTMLCleaner()
         cleaner.feed(new_str)
         return cleaner.data_list
