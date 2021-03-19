@@ -2,8 +2,10 @@ from bs4 import BeautifulSoup
 import codecs 
 from html.parser import HTMLParser # for HTML Cleaner
 import pandas as pd # for output report
-
 from html.parser import HTMLParser
+from typing import List
+import re   #for policy compare
+
 
 class HTMLCleaner(HTMLParser):
     def __init__(self, *args, **kwargs):
@@ -138,3 +140,44 @@ class GPResult_Parser(object):
         return df
 
 
+class PolicyComparator(object):
+    _instance = None
+    @staticmethod
+    def get_instance():
+        if PolicyComparator._instance is None:
+            PolicyComparator()
+        return PolicyComparator._instance
+
+    def __init__(self):
+        if PolicyComparator._instance is not None:
+            raise Exception('only one instance can exist')
+        else:
+            PolicyComparator._instance = self
+    
+    def _get_float_from_setting(self,sources):
+        val = [float(s) for s in re.findall(r'-?\d+\.?\d*', sources)]
+        if len(val) > 0:
+            return val[0]
+        else:
+            return None
+    
+    def get_compared_results(self,computer_settings:str,policy_settings:List,operation='=') -> bool: 
+        IsPass = False
+        for policy_setting in policy_settings:
+            if operation == '>=':
+                IsPass =True if self._get_float_from_setting(computer_settings) >= self._get_float_from_setting(policy_setting) else IsPass
+            elif operation == '<=':
+                IsPass =True if self._get_float_from_setting(computer_settings) <= self._get_float_from_setting(policy_setting) else IsPass
+            # begin : The purpose of this code is performance optimization
+            elif operation=='=': 
+                IsPass = True if (computer_settings == policy_setting) else IsPass
+            # endbegin
+            elif operation=='!=' or operation =='<>': 
+                IsPass = True if (computer_settings != policy_setting) else IsPass
+            elif operation == '>':
+               IsPass =True if self._get_float_from_setting(computer_settings) > self._get_float_from_setting(policy_setting) else IsPass
+            elif operation == '<': 
+                IsPass = True if self._get_float_from_setting(computer_settings) < self._get_float_from_setting(policy_setting) else IsPass
+            else:
+                IsPass = True if computer_settings == policy_setting else IsPass
+        return IsPass

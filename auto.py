@@ -45,6 +45,11 @@ def step2_check_all_setting_is_ok_or_not(src_filename,output_filename):
     print ('Running Step 2 ....')
     # TODO : Compare the original data(raw_data.csv) and the rule file(rule.inf) to see if they match the settings.
     
+    isPass = PolicyComparator.get_instance().get_compared_results(
+        '1 DAYS',
+        policy_settings=['5 DAYS','6 DAYS'],
+        operation='<')
+    print (isPass)
     # TODO : use to_csv compared result to save as csv file.
     pass
 def step3_make_report(src_filename,output_filename):
