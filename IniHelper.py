@@ -10,9 +10,14 @@ import configparser
 
 class E_INI_Session(Enum):
     DATA = 'Data'
+    RULE ="Rule"
 
 class E_INI_KEY(Enum):
+    # DATA 
     SOURCE_PATH = 'SourcePath'
+    # RULE
+    WINDOWS_FILE_NAME = "Windows"
+    LINUX_FILE_NAME = "Linux"
 
 class IniHelper:
     __instance = None

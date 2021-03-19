@@ -12,6 +12,10 @@ def get_files(path):
     files = [f for f in listdir(path) if isfile(join(path, f))]
     return files
 
+def load_rule() -> pd.DataFrame:
+    windows_rule_filename = IniHelper.get_instance().get_value(E_INI_Session.RULE,E_INI_KEY.WINDOWS_FILE_NAME)
+    csv = pd.read_csv(windows_rule_filename)
+    return csv
 def step1_extract_security_setting_from_htmls(output_filename='raw_data.csv'):
     print ('Running Step 1 ....')
     path = IniHelper.get_instance().get_value(
@@ -45,11 +49,34 @@ def step2_check_all_setting_is_ok_or_not(src_filename,output_filename):
     print ('Running Step 2 ....')
     # TODO : Compare the original data(raw_data.csv) and the rule file(rule.inf) to see if they match the settings.
     
-    isPass = PolicyComparator.get_instance().get_compared_results(
-        '1 DAYS',
-        policy_settings=['5 DAYS','6 DAYS'],
-        operation='<')
-    print (isPass)
+    raw_data = pd.read_csv(src_filename)
+    df_rule = load_rule()
+
+    compared_results = []
+    for idx_rawdata in range(min(raw_data.count())):
+        item_policy = raw_data['Policy'][idx_rawdata]
+        item_setting = raw_data['Setting'][idx_rawdata]
+
+        item_result = None
+        isFound = False
+        for idx in range(min(df_rule.count())):   
+            if item_policy == df_rule['ch'][idx] or item_policy == df_rule['en'][idx]:
+                # print ('policy ',item_policy,
+                # 'rules',[df_rule['rule_main'][idx],df_rule['rule_sec'][idx]],'operation ',str(df_rule['operations'][idx]))
+                isPass = PolicyComparator.get_instance().get_compared_results(
+                    item_setting,
+                    policy_settings=[df_rule['rule_main'][idx],df_rule['rule_sec'][idx]],
+                    operation=df_rule['operations'][idx])
+
+                compared_results.append(isPass)
+                isFound = True
+            
+        if not isFound:
+            compared_results.append('NAN')
+    
+    raw_data.insert(3,'Compared Result',compared_results)
+    raw_data.to_csv(output_filename,index=False)
+
     # TODO : use to_csv compared result to save as csv file.
     pass
 def step3_make_report(src_filename,output_filename):
