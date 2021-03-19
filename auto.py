@@ -52,10 +52,11 @@ def get_policy_wording(operations,words):
     return results
 
 def step1_extract_security_setting_from_htmls(output_filename='raw_data.csv'):
-    print ('Running Step 1 ....')
     path = IniHelper.get_instance().get_value(
         session=E_INI_Session.DATA,
         key=E_INI_KEY.SOURCE_PATH)
+    print ('Step 1：Extract config from ', path)
+    
     filenames = get_files(path)
 
     progress = ProgressBar(len(filenames), fmt=ProgressBar.FULL)
@@ -81,7 +82,7 @@ def step1_extract_security_setting_from_htmls(output_filename='raw_data.csv'):
     result.to_csv(output_filename,index=False)
 
 def step2_check_all_setting_is_ok_or_not(src_filename,output_filename):
-    print ('Running Step 2 ....')
+    print ('Step 2：Check if the setting complies with GCB.')
     # TODO : Compare the original data(raw_data.csv) and the rule file(rule.inf) to see if they match the settings.
     
     raw_data = pd.read_csv(src_filename)
@@ -90,7 +91,7 @@ def step2_check_all_setting_is_ok_or_not(src_filename,output_filename):
     compared_results = []
     computer_size = min(raw_data.count())
     rule_size = min(df_rule.count())
-
+    
     progress = ProgressBar(computer_size, fmt=ProgressBar.FULL)
     progress()
     for idx_rawdata in range(computer_size):
@@ -128,7 +129,7 @@ def step2_check_all_setting_is_ok_or_not(src_filename,output_filename):
 
 def step3_make_report(src_filename,output_filename):
     # TODO : call my make report python script (may don't have time to refactoring).
-    print ('Running Step 3 ....')
+    print ('Step 3：Making report.')
     rule_config_path = IniHelper.get_instance().get_value(E_INI_Session.RULE,E_INI_KEY.WINDOWS_FILE_NAME)
 
     df_rule = pd.read_csv(rule_config_path)
@@ -136,8 +137,12 @@ def step3_make_report(src_filename,output_filename):
 
     computer_names = computers = list(set(df_rawdata_with_compared_result['ComputerName']))
     datatable = []
-    
-    for idx_rule in range(len(df_rule['Name'])):
+    rule_name_size = len(df_rule['Name'])
+
+    progress = ProgressBar(rule_name_size, fmt=ProgressBar.FULL)
+    progress()
+
+    for idx_rule in range(rule_name_size):
         
         row_data = []
         row_compare_result = []
@@ -157,6 +162,8 @@ def step3_make_report(src_filename,output_filename):
         
         datatable.append(row_data)
         datatable.append(row_compare_result)
+        progress.current += 1
+        progress()
 
     pd_dt = pd.DataFrame(datatable,columns=computer_names)
     rule_names = list(df_rule['Name'])
