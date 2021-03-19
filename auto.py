@@ -33,6 +33,14 @@ def current_computer_setting_at_current_rule_tag(current_rule_tag,computer_setti
                 compared_results = compared
                 return (computer_settings,compared_results)
     return (None, None)
+def get_rule_names(rules):
+    lst = []
+
+    for rule in rules:
+        lst.append(rule)
+        lst.append('check for %s'%rule)  # for compare results
+    
+    return lst
 
 def get_policy_wording(operations,words):
     if len(words) != len(operations):
@@ -40,6 +48,7 @@ def get_policy_wording(operations,words):
     results = []
     for idx,operation in enumerate(operations):
         results.append(("%s %s"%(operation,words[idx])))
+        results.append('')  # for compared result
     return results
 
 def step1_extract_security_setting_from_htmls(output_filename='raw_data.csv'):
@@ -147,10 +156,11 @@ def step3_make_report(src_filename,output_filename):
                 row_compare_result.append(compared_results)
         
         datatable.append(row_data)
+        datatable.append(row_compare_result)
 
     pd_dt = pd.DataFrame(datatable,columns=computer_names)
     rule_names = list(df_rule['Name'])
-    pd_dt.insert(0,'Setting Name',list(df_rule['Name']))
+    pd_dt.insert(0,'Setting Name',get_rule_names(list(df_rule['Name'])))
     pd_dt.insert(1,'Rule',get_policy_wording(operations=df_rule['operations'],words=df_rule['rule_sec']))
     # print (pd_dt)
 
