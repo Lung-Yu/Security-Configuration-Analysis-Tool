@@ -95,15 +95,23 @@ def step2_check_all_setting_is_ok_or_not(src_filename,output_filename):
     progress = ProgressBar(computer_size, fmt=ProgressBar.FULL)
     progress()
     for idx_rawdata in range(computer_size):
-        item_policy = raw_data['Policy'][idx_rawdata]
+        item_policy = raw_data['Policy'][idx_rawdata].strip()
         item_setting = raw_data['Setting'][idx_rawdata]
 
         item_result = None
         isFound = False
         for idx in range(rule_size):   
-            if item_policy == df_rule['ch'][idx] or item_policy == df_rule['en'][idx]:
+            rule_tags = [df_rule['ch'][idx].strip(), df_rule['en'][idx].strip()]
+            # print (len(item_policy),type(item_policy),item_policy)
+            # print (len(rule_tags[0]),type(rule_tags[0]),rule_tags[0])
+            # print (len(rule_tags[1]),type(rule_tags[1]),rule_tags[1])
+            # print (item_policy in rule_tags)
+            # print ("================")
+            # if (item_policy == df_rule['ch'][idx]) or (item_policy == df_rule['en'][idx]):
+            if item_policy in rule_tags:
                 # print ('policy ',item_policy,
                 # 'rules',[df_rule['rule_main'][idx],df_rule['rule_sec'][idx]],'operation ',str(df_rule['operations'][idx]))
+                # print (item_policy,df_rule['ch'][idx],df_rule['en'][idx])
                 isPass = PolicyComparator.get_instance().get_compared_results(
                     item_setting,
                     policy_settings=[df_rule['rule_main'][idx],df_rule['rule_sec'][idx]],
