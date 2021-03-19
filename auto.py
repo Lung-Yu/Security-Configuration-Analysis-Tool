@@ -53,13 +53,18 @@ def step2_check_all_setting_is_ok_or_not(src_filename,output_filename):
     df_rule = load_rule()
 
     compared_results = []
-    for idx_rawdata in range(min(raw_data.count())):
+    computer_size = min(raw_data.count())
+    rule_size = min(df_rule.count())
+
+    progress = ProgressBar(computer_size, fmt=ProgressBar.FULL)
+    progress()
+    for idx_rawdata in range(computer_size):
         item_policy = raw_data['Policy'][idx_rawdata]
         item_setting = raw_data['Setting'][idx_rawdata]
 
         item_result = None
         isFound = False
-        for idx in range(min(df_rule.count())):   
+        for idx in range(rule_size):   
             if item_policy == df_rule['ch'][idx] or item_policy == df_rule['en'][idx]:
                 # print ('policy ',item_policy,
                 # 'rules',[df_rule['rule_main'][idx],df_rule['rule_sec'][idx]],'operation ',str(df_rule['operations'][idx]))
@@ -73,9 +78,15 @@ def step2_check_all_setting_is_ok_or_not(src_filename,output_filename):
             
         if not isFound:
             compared_results.append('NAN')
-    
+        # TODO: draw on ui
+        progress.current += 1
+        progress()
+
+    progress.done()
+    # TODO : export data as csv file.
     raw_data.insert(3,'Compared Result',compared_results)
     raw_data.to_csv(output_filename,index=False)
+    
 
     # TODO : use to_csv compared result to save as csv file.
     pass
