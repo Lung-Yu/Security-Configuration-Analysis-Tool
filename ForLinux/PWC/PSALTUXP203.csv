@@ -1,0 +1,15 @@
+ 1.1.1, Ensure FTP Server is not installed,                              ,PASSED(B[m
+ 1.3, Ensure telnet client is not installed,                             ,PASSED(B[m
+ 3.1, Ensure permissions on /etc/ssh/sshd_config are configured,         ,FAILED(B[m
+ 3.2, Ensure ssh_config permissions lockdown,                            ,PASSED(B[m
+ 3.3, Ensure SSH LogLevel is appropriate,                                ,FAILED(B[m
+ 3.4, Ensure SSH MaxAuthTries is set to 4 or less,                       ,PASSED(B[m
+ 3.5, Ensure SSH IgnoreRhosts is enabled, yes                            ,PASSED(B[m
+ 3.6, Ensure SSH PermitEmptyPasswords is disabled, no                    ,PASSED(B[m
+ 3.7.1, Ensure SSH Idle Timeout Interval is configured:ClientAliveInterval <= 300,,PASSED(B[m
+ 3.7.2,Ensure SSH Idle Timeout Interval is configured:ClientAliveCountMax <= 3, ,PASSED(B[m
+ 3.8, Ensure SSH restrict Cipher list,                                   ,FAILED(B[m
+ 3.9, Ensure SSH disabling direct root access, no                        ,PASSED(B[m
+ 3.10, Ensure SSH allow the server SSH2 protocol only,                   ,PASSED(B[m
+ 3.11, Ensure SSH allow the client SSH2 protocol only,                   ,PASSED(B[m
+ 3.12, Ensure SSH host-based authentication is disallowed,               ,PASSED(B[m

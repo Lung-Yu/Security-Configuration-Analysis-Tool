@@ -65,8 +65,20 @@ class GPResult_Parser(object):
     def get_current_computer_name(self):
         t_info = self._soup.find_all('table',{'class':'info'})
         # return find_index(get_text_from_html(t_info[0]),)
-        return self._get_values_from_text(
-            self._get_text_from_html(t_info[0]),target='Computer name')
+        targets = ['Computer name','User name','電腦名稱','使用者名稱']
+
+        computer_name = None
+        for target in targets:
+            if None == computer_name:
+                computer_name = self._get_values_from_text(
+                    self._get_text_from_html(t_info[0]),target=target) 
+            else:
+                break
+        
+        if None == computer_name:
+            print("［-］ Failed to read computer name from 【%s】 file"%(self._filename))
+
+        return computer_name
 
     def Get_Item_Count(self):
         return len(self._tables)
@@ -109,9 +121,14 @@ class GPResult_Parser(object):
         for idx in range(0,self.Get_Item_Count()):
             item_html = self.Get_Item(index=idx)
             dicts = self._get_text_from_html(item_html)
-            if len(dicts) % 3 == 0 and 'Policy' in dicts and 'Setting' in dicts and 'Winning GPO' in dicts:
-                for idx_words in range(3,len(dicts),3): 
-                    
+
+            if len(dicts) % 3 != 0:
+                continue
+
+            if ('Policy' in dicts and 'Setting' in dicts and 'Winning GPO' in dicts) \
+                or ('原則' in dicts and '設定' in dicts and '優勢 GPO' in dicts):
+
+                for idx_words in range(3,len(dicts),3):     
                     setting_tag = dicts[idx_words]
                     setting_val = dicts[idx_words + 1]
                     setting_gpo = dicts[idx_words + 2]
@@ -178,6 +195,12 @@ class PolicyComparator(object):
                IsPass =True if self._get_float_from_setting(computer_settings) > self._get_float_from_setting(policy_setting) else IsPass
             elif operation == '<': 
                 IsPass = True if self._get_float_from_setting(computer_settings) < self._get_float_from_setting(policy_setting) else IsPass
+            elif operation == '~':
+                IsPass = True if (computer_settings in policy_setting) else IsPass
+            elif operation == '~<':
+                IsPass = True if (computer_settings.startswith(policy_setting)) else IsPass
+            elif operation == '~>':
+                IsPass = True if (computer_settings.endswith(policy_setting)) else IsPass
             else:
                 IsPass = True if computer_settings == policy_setting else IsPass
         return IsPass

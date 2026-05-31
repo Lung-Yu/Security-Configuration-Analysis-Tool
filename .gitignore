@@ -1,0 +1,18 @@
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Analysis output files (generated at runtime)
+raw_data.csv
+out.csv
+roadmap_v2.csv
+
+# Client HTML data (sensitive)
+collected_from_clients/
+original_files/
+
+# OS
+Thumbs.db
+.DS_Store
